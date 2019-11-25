@@ -1,0 +1,250 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GameController : MonoBehaviour
+{
+    public GameObject cubePrefab;
+    Vector3 cubePosition;
+    Vector3 newPosition;
+    float turnLength, takeTurn;
+    float gameLength;
+    int gridHeight, gridWidth;
+    int score;
+    int scoreMin;
+    bool activeCube;
+    bool loseState;
+    GameObject[,] grid;
+    GameObject[,] colorArray;
+    GameObject[,] freeArray;
+    int nextCube;
+    int freeCube, lockedCube;
+    int nextCubeDestination, randomDestination; // (???)
+
+    /* This isn't even close to done or being in working order yet
+     * but i want to turn something in for part 2 instead of leaving it blank so its clear
+     * that i AM trying to make progress. ive been doing it w/o the walkthru
+     * and struggling through a lot of it but over fall break i plan on doing a lot!! & using
+     * the extra free time to do work on this. */
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        loseState = false;
+        turnLength = 2.0f;
+        takeTurn = turnLength;
+        gameLength = 60f;
+        // do you have to put in a variable to decrease the game’s length as time goes on… no, right?
+        // height & width can be shortened to h & w (easier to read than x & y)
+        // 5 rows
+        // grid of 8 x 5
+        // height is the rows, width is the columns
+        gridHeight = 5;
+        gridWidth = 8;
+
+        for (int h = 0; h < gridHeight; h++)
+        {
+            for (int w = 0; w < gridWidth; w++)
+            {
+                cubePosition = new Vector3(h * 2, w * 2, 0);
+                grid[h, w] = Instantiate(cubePrefab, cubePosition, Quaternion.identity);
+                grid[h, w].GetComponent<CubeController>().myH = h;
+                grid[h, w].GetComponent<CubeController>().myW = w;
+            }
+        }
+
+        Color[] colorArray = new Color[5];
+        colorArray[0] = Color.magenta;
+        colorArray[1] = Color.blue;
+        colorArray[2] = Color.green;
+        colorArray[3] = Color.red;
+        colorArray[4] = Color.yellow;
+
+        // colorArray[Random.Range(0, 5)];
+        int randomColor;
+        randomColor = Random.Range(0, 5);
+
+
+    }
+
+    // methods start here
+    public void ProcessClick(GameObject cubeClicked, int h, int w) {
+
+        if (grid[h, w].GetComponent<Renderer>().material.color != Color.white || grid[h, w].GetComponent<Renderer>().material.color != Color.black)
+        {
+            activeCube = true;
+            if (grid[h + 1, w].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h + 1, w].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h + 1, w + 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h + 1, w + 1].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h, w + 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h, w + 1].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h - 1, w].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h - 1, w].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h - 1, w - 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h - 1, w - 1].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h, w - 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h, w -1].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h - 1, w + 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h -1, w + 1].GetComponent<Renderer>().material.color = new Color();
+            }
+            if (grid[h + 1, w - 1].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[h + 1, w - 1].GetComponent<Renderer>().material.color = new Color();
+            }
+        }
+
+
+    }
+
+    void CheckForPlus(int myH, int myW) {
+
+        if (grid[myH, myW].GetComponent<Renderer>().material.color == Color.red && grid[myH + 1, myW].GetComponent<Renderer>().material.color == Color.red && grid[myH - 1, myW].GetComponent<Renderer>().material.color == Color.red && grid[myH, myW - 1].GetComponent<Renderer>().material.color == Color.red && grid[myH, myW + 1].GetComponent<Renderer>().material.color == Color.red)
+        {
+            score += 10;
+        }
+    }
+
+    void CreateNextCube() {
+
+        // grid[x, y] = Instantiate(cubePrefab, newPosition, Quaternion.identity);
+
+        Color[] colorArray = new Color[5];
+        colorArray[0] = Color.magenta;
+        colorArray[1] = Color.blue;
+        colorArray[2] = Color.green;
+        colorArray[3] = Color.red;
+        colorArray[4] = Color.yellow;
+
+        int randomColor;
+        randomColor = Random.Range(0, 5);
+
+    }
+
+    void TimeRunsOut() {
+
+        if (gameLength == 0 && score >= 1)
+        {
+            loseState = false;
+            print("You win!");
+        }
+        else if (gameLength == 0 && score == 0)
+        {
+            loseState = true;
+        }
+    }
+
+    void DetectKeyInput() {
+
+        // dont fully understand lists yet - work on it
+        /* List<int> placeList = new List<int>();
+        placeList.Add(1);
+        placeList.Add(2);
+        placeList.Add(3);
+        placeList.Add(4);
+        placeList.Add(5);
+        placeList.Add(6);
+        placeList.Add(7);
+        placeList.Add(8); */
+
+        int randomPlace;
+        randomPlace = Random.Range(0, 8);
+
+        int randomColor;
+        randomColor = Random.Range(0, 5);
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (grid[0, randomPlace].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[0, randomPlace].GetComponent<Renderer>().material.color = new Color();
+            }
+            else if (grid[0, randomPlace].GetComponent<Renderer>().material.color != Color.white) {
+                grid[0, randomPlace].GetComponent<Renderer>().material.color = Color.black;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (grid[1, randomPlace].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[1, randomPlace].GetComponent<Renderer>().material.color = new Color();
+            }
+            else if (grid[1, randomPlace].GetComponent<Renderer>().material.color != Color.white)
+            {
+                grid[1, randomPlace].GetComponent<Renderer>().material.color = Color.black;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            if (grid[2, randomPlace].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[2, randomPlace].GetComponent<Renderer>().material.color = new Color();
+            }
+            else if (grid[2, randomPlace].GetComponent<Renderer>().material.color != Color.white)
+            {
+                grid[2, randomPlace].GetComponent<Renderer>().material.color = Color.black;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            if (grid[3, randomPlace].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[3, randomPlace].GetComponent<Renderer>().material.color = new Color();
+            }
+            else if (grid[3, randomPlace].GetComponent<Renderer>().material.color != Color.white)
+            {
+                grid[3, randomPlace].GetComponent<Renderer>().material.color = Color.black;
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            if (grid[4, randomPlace].GetComponent<Renderer>().material.color == Color.white)
+            {
+                grid[4, randomPlace].GetComponent<Renderer>().material.color = new Color();
+            }
+            else if (grid[4, randomPlace].GetComponent<Renderer>().material.color != Color.white)
+            {
+                grid[4, randomPlace].GetComponent<Renderer>().material.color = Color.black;
+            }
+        }
+    }
+
+    void CheckGameState()
+    {
+        if (loseState)
+        {
+            gameLength = 0;
+            print("You Lose!");
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //CheckForPlus(int myH, int myW);
+        //ProcessClick(GameObject cubeClicked, int h, int w);
+
+        if (Time.time > takeTurn)
+        {
+            CreateNextCube();
+        }
+        if(gameLength == 0)
+        {
+            TimeRunsOut();
+            CheckGameState();
+        }
+    }
+}
